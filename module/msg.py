@@ -1,5 +1,3 @@
-
-
 """
 json消息类型
 ## option  操作码
@@ -7,14 +5,20 @@ json消息类型
 
 ## 登录
 {'option':'logon',
- 'params':{'logon-name':'',     ## 登录名，可以是 账号名、手机号码或者邮箱
-           'password':'xxxxxxxx'} ## 密码
+ 'params':{'logon-name':'',	## 登录名，可以是 账号名、手机号码或者邮箱
+ 			'password':'xxxxxxxx'}	## 密码
 }
 
 """
 
-class MsgHandle(object):
-    """ 消息处理 """
+__all__ = ['MsgHandle']
 
-    def __init__(self):
-        self.handle_map = {}
+class MsgHandle(object):
+	"""  消息处理 """
+
+	def __init__(self):
+		self.handle_map = {}
+
+	def handle(self, _data, _client):
+		pass
+
