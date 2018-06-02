@@ -34,7 +34,6 @@ class NetIO(object):
 	@asyncio.coroutine
 	def handle(self, _reader, _writer):
 		""" 新建链接，以及后续的读写处理都在这里 """
-		print('have client')
 		client = None
 		if self.connect_cb:
 			client = self.connect_cb(_reader, _writer)

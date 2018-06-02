@@ -1,7 +1,9 @@
 __all__ = ['ServerMgr']
 
-from module.netio import *
+from module.netio import NetIO
 from module.client import *
+from module.msg import MsgHandle
+from module.heartbeat import HeartBeat
 import configparser
 
 
@@ -12,6 +14,8 @@ class ServerMgr(object):
 		super(ServerMgr, self).__init__()
 		self.port = None
 		self.client_mgr = ClientList()  # 客户端管理
+		self.msg_handle = MsgHandle()
+		self.heart_mgr = None
 		self.svr = None
 
 	def load_config(self):
@@ -19,6 +23,7 @@ class ServerMgr(object):
 		try:
 			conf.read('conf.ini')
 			self.port = int(conf['server']['port'])
+			self.heart_mgr = HeartBeat(int(conf['server']['heartbeat']), self.client_mgr)
 		except Exception as e:
 			print('ini read failed: %s' % e)
 			return False
@@ -42,9 +47,10 @@ class ServerMgr(object):
 
 	def read_callback(self, _data, _client):
 		""" 处理客户端发来的数据 """
+		_data = _data.decode()
 		print(_data)
-		_data = _data + b' from Server\r\n'
-		_client.writer.write(_data)
+		self.msg_handle.handle(_data, _client)
+
 
 	def disconn_callback(self, _client):
 		""" 客户端断开链接，执行清理工作 """
