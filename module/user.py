@@ -8,6 +8,7 @@
 """
 
 from module.base_handle import BaseHandle
+import pymongo
 
 class User(BaseHandle):
     """Client User information"""
@@ -20,10 +21,9 @@ class User(BaseHandle):
 
     def load_module(self):
         """ 模块加载，注册消息处理函数 """
-        return {'logon':self.handle}
+        return {'logon': self.user_logon}
 
-    def handle(self, _params, _client):
-        """  具体的消息处理方法 """
+    def user_logon(self, _params, _client):
         try:
             print(_params['logon_name'])
             print(_params['password'])

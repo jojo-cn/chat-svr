@@ -10,6 +10,3 @@ class BaseHandle(object):
         """ 模块加载，注册消息处理函数 """
         return NotImplemented
 
-    def handle(self, _params, _client):
-        """  具体的消息处理方法 """
-        return NotImplemented

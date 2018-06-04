@@ -32,7 +32,7 @@ class MsgHandle(object):
             op = msg['option']
             params = msg['params']
             if op and params:
-                self.handle_map[op](params, _client)
+                self.handle_map[op](msg, _client)
         except Exception as e:
             print('client send Bad Data!!!: %s' % e)
         _data = _data + ' from Server\r\n'
