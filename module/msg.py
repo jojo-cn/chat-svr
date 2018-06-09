@@ -20,10 +20,15 @@ class MsgHandle(object):
 
     def __init__(self):
         self.handle_map = {}
+        self.db_ctrl = None
+
         self._user = User()
 
         #
         self.handle_map.update(self._user.load_module())
+
+    def set_database(self, _db):
+        self.db_ctrl = _db
 
 
     def handle(self, _data, _client):
@@ -32,7 +37,7 @@ class MsgHandle(object):
             op = msg['option']
             params = msg['params']
             if op and params:
-                self.handle_map[op](msg, _client)
+                self.handle_map[op](msg, _client, self.db_ctrl)
         except Exception as e:
             print('client send Bad Data!!!: %s' % e)
         _data = _data + ' from Server\r\n'

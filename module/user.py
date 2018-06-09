@@ -8,7 +8,6 @@
 """
 
 from module.base_handle import BaseHandle
-import pymongo
 
 class User(BaseHandle):
     """Client User information"""
@@ -19,16 +18,27 @@ class User(BaseHandle):
         self.sock_fd = 0
         self.client_id = 0
 
+        #
+        # 用户文档（相当于用户表）
+        self.user_doc = 'user_info'
+
     def load_module(self):
         """ 模块加载，注册消息处理函数 """
         return {'logon': self.user_logon}
 
-    def user_logon(self, _params, _client):
+    def user_logon(self, _params, _client, _db):
         try:
-            print(_params['logon_name'])
-            print(_params['password'])
+            name = _params['logon_name']
+            pwd = _params['password']
+            cur = _db[self.user_doc].find({'username': name, 'password': pwd})
+            if cur.count > 0:
+                # 登录成功
+                return True
+            else:
+                return False
         except Exception as e:
             print('user handle failed: %s' % e)
+            return False
 
 
 class UserList(object):
