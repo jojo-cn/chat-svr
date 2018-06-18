@@ -1,12 +1,13 @@
 import pymongo
 
+
 class DBConnector(object):
     """ 数据库连接管理 """
 
     def __init__(self, _dbname, _ip, _port):
         self.db_name = _dbname
         self.db_ip = _ip
-        self.db_port = _port
+        self.db_port = int(_port)
 
         self.core_db = None
 

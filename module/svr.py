@@ -63,4 +63,8 @@ class ServerMgr(object):
 
     def disconn_callback(self, _client):
         """ 客户端断开链接，执行清理工作 """
+
+        self.msg_handle.handle({'option': 'logoff',
+                                'params': {'user_id': _client.user.user_id}}, _client)
         self.client_mgr.del_client(_client)
+
