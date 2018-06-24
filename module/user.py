@@ -14,6 +14,8 @@
 
 from module.base_handle import BaseHandle
 from module.err import Err
+from module.imc import IMC
+from module.packet import *
 from hashlib import md5
 
 
@@ -54,6 +56,11 @@ class UserList(object):
         else:
             return False
 
+    def report_user_by_id(self, _user_id):
+        try:
+            return self._user_list[_user_id]
+        except Exception as e:
+            return None
 
 
 class UserHandler(BaseHandle):
@@ -65,6 +72,9 @@ class UserHandler(BaseHandle):
         #
         # 用户文档（相当于用户表）
         self._db_doc = 'user_info'
+        #
+        # 注册模块间通讯
+        IMC.register('get_user', self.get_user_by_id)
 
     def load_module(self):
         """ 模块加载，注册消息处理函数 """
@@ -84,7 +94,7 @@ class UserHandler(BaseHandle):
                 # 确认该用户是否已经登陆了
                 one = cur.next()
                 if self._all_users.is_user_logon(one['_id']):
-                    return {'Result': 'Failed', 'Err': Err.USER_ALREADY_LOGON}
+                    return FailRetPacket('logon', {'err_massage': Err.USER_ALREADY_LOGON})
 
                 # 登录成功
                 n_user = User()
@@ -96,9 +106,9 @@ class UserHandler(BaseHandle):
                 # 添加到用户列表中
                 self._all_users.add_user({n_user.user_id: n_user})
 
-                return {'Result': 'Success', 'Params': {'user_id': n_user.user_id}}
+                return SuccessRetPacket('logon', {'user_id': n_user.user_id})
             else:
-                return {'Result': 'Failed', 'Err': Err.USER_LOGON_FAILED}
+                return FailRetPacket('logon', {'err_massage': Err.USER_LOGON_FAILED})
         except Exception as e:
             print('user logon failed: %s' % e)
             return False
@@ -106,4 +116,7 @@ class UserHandler(BaseHandle):
     def user_logoff(self, _params, _client, _db):
         user_id = _params['user_id']
         self._all_users.release_user(user_id)
+
+    def get_user_by_id(self, __user_id):
+        return self._all_users.report_user_by_id(__user_id)
 

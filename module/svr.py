@@ -3,8 +3,9 @@ __all__ = ['ServerMgr']
 from module.netio import NetIO
 from module.client import *
 from module.msg import MsgHandle
-from module.heartbeat import HeartBeat
+# from module.heartbeat import HeartBeat
 from module.db import DBConnector
+from module.debug_output import debug_screen
 import configparser
 
 
@@ -13,12 +14,15 @@ class ServerMgr(object):
 
     def __init__(self):
         super(ServerMgr, self).__init__()
-        self.port = None
-        self.client_mgr = ClientList()  # 客户端管理
-        self.msg_handle = MsgHandle()
-        self.heart_mgr = None
-        self.svr = None
-        self.db_mgr = None
+        try:
+            self.port = None
+            self.client_mgr = ClientList()  # 客户端管理
+            self.msg_handle = MsgHandle()
+            self.heart_mgr = None
+            self.svr = None
+            self.db_mgr = None
+        except Exception as e:
+            debug_screen(e, __file__, '__init__')
 
     def initialize(self):
         conf = configparser.ConfigParser()
@@ -26,7 +30,7 @@ class ServerMgr(object):
             conf.read('conf.ini')
             self.port = int(conf['server']['port'])
             # 心跳模块初始化
-            self.heart_mgr = HeartBeat(int(conf['server']['heartbeat']), self.client_mgr)
+            # self.heart_mgr = HeartBeat(int(conf['server']['heartbeat']), self.client_mgr)
             # 数据库模块初始化
             self.db_mgr = DBConnector(conf['database']['database_name'],
                                       conf['database']['db_ip'], conf['database']['db_port'])
@@ -34,7 +38,7 @@ class ServerMgr(object):
             # 向消息管理器设置数据库接口
             self.msg_handle.set_database(self.db_mgr)
         except Exception as e:
-            print('ini read failed: %s' % e)
+            debug_screen(e, __file__, 'initialize')
             return False
         return True
 
